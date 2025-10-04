@@ -1,24 +1,27 @@
 
 import Dashboard from "../pages/Dashboard/Dashboard";
-import Products from "../pages/products";
-import ProductCreate from "../pages/products/Create";
-import ProductUpdate from "../pages/products/edit";
+
 import Profile from "../pages/Profile";
 import ResetPassword from "../pages/ResetPassword";
+import TaskTable from "../pages/Tasks";
+import TaskCreate from "../pages/Tasks/Create";
+import TaskDetails from "../pages/Tasks/details";
+
+import { getToken } from "../utils/helpers";
 
 import { DashboardLayout } from './../layouts/dashboard.layout';
+import TaskEdit from './../pages/Tasks/edit';
 
 const appRoutes = [
   {
     path: "/dashboard",  // Ensure the path is absolute
     element: <DashboardLayout />,
     children: [
-      { index: true, element: <Dashboard /> },  // This will render at /dashboard
-      { path: "products", element: <Products /> },
-      { path: "products/:id", element: <ProductUpdate /> },
-      
-      { path: "create-product", element: <ProductCreate/> },  
-      
+      { index: true, element: <Dashboard /> }, 
+      { path: "task", element: <TaskTable /> },
+      { path: "task-details/:id", element: <TaskDetails /> },
+      { path: "task-edit/:id", element: <TaskEdit /> },
+      { path: "create-task", element: <TaskCreate/> },  
       { path: "profile", element: <Profile/> },  
       { path: "reset-password", element: <ResetPassword/> },
     ],
@@ -26,10 +29,10 @@ const appRoutes = [
 ];
 
 export const permittedRoutes = () => {
-  // const token = getToken();
-  // if (token) {
-  //   return appRoutes;
-  // }
-  return appRoutes;
-  // return [];
+  const token = getToken();
+  if (token) {
+    return appRoutes;
+  }
+  // return appRoutes;
+  return [];
 };

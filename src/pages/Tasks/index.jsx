@@ -1,28 +1,29 @@
 import React, { useCallback, useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
-import { FaEye, FaTrash } from "react-icons/fa";
+import { FaEye } from "react-icons/fa";
 import { RiEditFill } from "react-icons/ri";
-import DeleteProductModal from "../../components/modal/productDelete";
 import { networkErrorHandeller } from "../../utils/helpers";
 import { NetworkServices } from "../../network";
 import { Toastify } from "../../components/toastify";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { TableSkeleton } from "../../components/Skeleton/Skeleton";
+import DeleteTaskModal from "../../components/modal/taskDelete";
 
-const ProductTable = () => {
-  const [productList, setProductList] = useState([]);
+const TaskTable = () => {
+  const [TaskList, setTaskList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [totalRows, setTotalRows] = useState(0);
 
-  console.log("totalRows", totalRows);
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const status = queryParams.get("status"); // Pending / Completed / In Progress / null
 
+  // pagination handlers
   const handlePageChange = (page) => {
-    if (!loading) {
-      setCurrentPage(page);
-    }
+    if (!loading) setCurrentPage(page);
   };
 
   const handleRowsPerPageChange = (newPerPage, page) => {
@@ -30,50 +31,47 @@ const ProductTable = () => {
     setCurrentPage(page);
   };
 
-  // Fetch categories from API
-  const fetchProduct = useCallback(async () => {
+  // fetch tasks
+  const fetchTask = useCallback(async () => {
     try {
       setLoading(true);
-      const queryParams = new URLSearchParams();
-      queryParams.append("page", currentPage);
-      queryParams.append("per_page", perPage);
-      const response = await NetworkServices.Product.index(
-        queryParams.toString()
-      );
-      console.log("response", response);
+
+      const response = await NetworkServices.Task.index({
+        page: currentPage,
+        per_page: perPage,
+        status: status || undefined,
+      });
 
       if (response?.status === 200) {
-        setProductList(response?.data?.data?.data || []);
-        setTotalRows(response?.data?.data?.total || 0);
+        setTaskList(response?.data?.tasks || []);
+        setTotalRows(response?.data?.total || 0); // backend must return total count
       }
     } catch (error) {
       networkErrorHandeller(error);
     }
     setLoading(false);
-  }, [currentPage, perPage]);
+  }, [currentPage, perPage, status]);
 
   useEffect(() => {
-    fetchProduct();
-  }, [fetchProduct]);
+    fetchTask();
+  }, [fetchTask]);
 
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedTask, setSelectedTask] = useState(null);
 
-  const handleDelete = (product) => {
-    setSelectedProduct(product);
+  const handleDelete = async (id) => {
+    const response = await NetworkServices.Task.show(id);
+    setSelectedTask(response?.data?.task);
     setIsOpen(true);
   };
 
   const handleDeleteClick = async (id) => {
     setDeleteLoading(true);
     try {
-      const response = await NetworkServices.Product.destroy(id);
-      console.log("response", response);
+      const response = await NetworkServices.Task.destroy(id);
       if (response?.status === 200) {
-        Toastify.Success(
-          response?.data?.message || "Product deleted successfully"
-        );
-        fetchProduct();
+        Toastify.Success(response?.data?.message || "Task deleted successfully");
+        fetchTask();
       }
     } catch (error) {
       networkErrorHandeller(error);
@@ -84,59 +82,61 @@ const ProductTable = () => {
 
   const handleCancel = () => {
     setIsOpen(false);
-    setSelectedProduct(null);
+    setSelectedTask(null);
   };
 
   const columns = [
     {
-      name: "SN",
-      width: "80px",
-      center: true,
-      cell: (row, index) => (
-        <span className="text-base font-medium">
-          {String(index + 1).padStart(2, "0")}.
-        </span>
-      ),
-    },
-    {
-      name: "Photo",
-      cell: (row) => (
-        <img
-          src={`${import.meta.env.VITE_API_SERVER}${row?.thumbnail}`}
-          alt={row.product_name}
-          className="w-24 h-24 object-cover rounded-md shadow-sm"
-        />
-      ),
-      width: "160px",
-      // center: true,
-    },
-    {
-      name: "Name of the Product",
-      selector: (row) => row.product_name,
+      name: "Title",
+      selector: (row) => row.title,
       width: "20%",
       cell: (row) => (
-        <div className="text-left font-medium text-black  text-base">
-          {row.product_name}
+        <div className="text-left font-medium text-black text-base">
+          {row.title}
         </div>
       ),
     },
     {
-      name: "SKU",
-      selector: (row) => row.sku,
+      name: "Status",
+      selector: (row) => row.status,
       center: true,
       cell: (row) => (
-        <div className="  font-medium text-gray-800 font-poppins text-base">
-          {row.sku}
+        <div className="font-medium text-gray-800 text-base">
+          {row.status}
         </div>
       ),
     },
     {
-      name: "Price",
-      selector: (row) => row.offer_price,
+      name: "Description",
+      selector: (row) => row.description,
       center: true,
       cell: (row) => (
         <div className="text-base font-medium text-gray-900">
-          {row.offer_price}/-
+          {row.description}
+        </div>
+      ),
+    },
+    {
+      name: "Assigned Users",
+      selector: (row) => row.assignedUser,
+      center: true,
+      cell: (row) => (
+        <div className="text-base font-medium text-gray-900">
+          {row.assignedUser?.map((user) => (
+            <p key={user?._id}>{user?.name}</p>
+          ))}
+        </div>
+      ),
+    },
+    {
+      name: "DueDate",
+      selector: (row) => row.dueDate,
+      center: true,
+      cell: (row) => (
+        <div className="text-base font-medium text-gray-900">
+         {row.dueDate
+                ? new Date(row.dueDate).toLocaleDateString()
+                : "No date set"}
         </div>
       ),
     },
@@ -145,24 +145,25 @@ const ProductTable = () => {
       button: true,
       cell: (row) => (
         <div className="flex justify-center items-center gap-3 text-lg">
-          <button className="text-black hover:text-blue-600 cursor-pointer transition">
-            <Link to={`/dashboard/products/${row?.id}`}>
-              <RiEditFill />
-            </Link>
-          </button>
-          <div className="mt-2">
-            <Link to={`/dashboard/products-details/${row.id}`} title="Show Details">
-              <button className="text-blue-600 text-xl cursor-pointer">
-                <FaEye />
-              </button>
-            </Link>
-          </div>
+          <Link
+            to={`/dashboard/task-edit/${row?._id}`}
+            className="text-black hover:text-blue-600"
+          >
+            <RiEditFill />
+          </Link>
+          <Link
+            to={`/dashboard/task-details/${row._id}`}
+            title="Show Details"
+            className="text-blue-600 text-xl"
+          >
+            <FaEye />
+          </Link>
           <button
-            onClick={() => handleDelete(row)}
-            className="text-red-600 hover:text-red-800 cursor-pointer transition"
+            onClick={() => handleDelete(row?._id)}
+            className="text-red-600 hover:text-red-800"
           >
             <svg
-              className="w-5 h-6 text-red-500 "
+              className="w-5 h-6 text-red-500"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -202,18 +203,19 @@ const ProductTable = () => {
       },
     },
   };
+
   useEffect(() => {
-    document.title = "Vendor | Product ";
+    document.title = "User | Task";
   }, []);
 
   return (
-    <div className="w-full  font-poppins relative">
+    <div className="w-full font-poppins relative">
       {loading ? (
         <TableSkeleton />
       ) : (
         <DataTable
           columns={columns}
-          data={productList}
+          data={TaskList}
           customStyles={customStyles}
           highlightOnHover
           pagination
@@ -226,10 +228,10 @@ const ProductTable = () => {
           paginationDefaultPage={currentPage}
         />
       )}
-      {isOpen && selectedProduct && (
-        <DeleteProductModal
-          product={selectedProduct}
-          onDelete={() => handleDeleteClick(selectedProduct.id)}
+      {isOpen && selectedTask && (
+        <DeleteTaskModal
+          task={selectedTask}
+          onDelete={() => handleDeleteClick(selectedTask?._id)}
           onCancel={handleCancel}
           deleteLoading={deleteLoading}
         />
@@ -238,4 +240,4 @@ const ProductTable = () => {
   );
 };
 
-export default ProductTable;
+export default TaskTable;

@@ -10,7 +10,7 @@ const Card = ({data}) => {
       img: "/image/dash/lock.svg",
     },
     {
-      title: "Ongoing Task",
+      title: "In Prograss",
       value: data?.total_orders || 0,
       color: "bg-gradient-to-r from-[#FA6464] to-[#DC2626]",
       img: "/image/dash/lock.svg",

@@ -31,62 +31,26 @@ const Sidebar = ({
       icon: <RxDashboard />,
       path: "/dashboard",
     },
+ 
     {
-      title: "Orders",
-      icon: <HiBars3 />,
-      path: "/dashboard/orders",
-      childrens: [
-        { title: "All Orders", path: "/dashboard/orders" },
-        {
-          title: "Pending Orders",
-          path: "/dashboard/pending-orders",
-          status: "pending",
-        },
-        {
-          title: "Processed Orders",
-          path: "/dashboard/processed-orders",
-          status: "processing",
-        },
-        {
-          title: "Shipped Orders",
-          path: "/dashboard/shipped-orders",
-          status: "shipped",
-        },
-        {
-          title: "Completed Orders",
-          path: "/dashboard/completed-orders",
-          status: "delivered",
-        },
-        {
-          title: "Canceled Orders",
-          path: "/dashboard/canceled-orders",
-          status: "cancelled",
-        },
-      ],
-    },
-    {
-      title: "Products",
+      title: "Tasks",
       icon: <RiGalleryFill />,
-      path: "/dashboard/products",
-      childrens: [
-        { title: "All Product", path: "/dashboard/products" },
-        { title: "Create Product", path: "/dashboard/create-product" },
-        
-      ],
+      path: "/dashboard/task",
+    childrens: [
+  { title: "All Task", path: "/dashboard/task" },
+  { title: "Pending", path: "/dashboard/task?status=Pending" },
+  { title: "In Progress", path: "/dashboard/task?status=In Progress" },
+  { title: "Completed", path: "/dashboard/task?status=Completed" },
+  { title: "Create Task", path: "/dashboard/create-task" },
+],
+
     },
+   
     {
-      title: "Inventory",
-      icon: <MdOutlineInventory2 />,
-      path: "/dashboard/inventory",
-    },
-    {
-      title: "Earnings",
+      title: "Users",
       icon: <CiWallet />,
-      path: "/dashboard/earnings",
-      childrens: [
-        { title: "My Earnings", path: "/dashboard/earnings" },
-        { title: "Withdrawal", path: "/dashboard/Withdrawal" },
-      ],
+      path: "/dashboard/users",
+     
     },
 
   ];

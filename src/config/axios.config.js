@@ -9,13 +9,6 @@ const privateRequest = axios.create({
     baseURL: import.meta.env.VITE_API_URL+"api",
 }); 
  
-// const publicRequest = axios.create({
-//     baseURL: VITE_API_ENDPOINT,
-// });
-
-// const privateRequest = axios.create({
-//     baseURL: VITE_API_ENDPOINT,
-// }); 
 
 /* Public request config */
 publicRequest.interceptors.request.use(
