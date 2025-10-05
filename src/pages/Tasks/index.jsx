@@ -8,6 +8,7 @@ import { Toastify } from "../../components/toastify";
 import { Link, useLocation } from "react-router-dom";
 import { TableSkeleton } from "../../components/Skeleton/Skeleton";
 import DeleteTaskModal from "../../components/modal/taskDelete";
+import { useUser } from "../../hook/useUser";
 
 const TaskTable = () => {
   const [TaskList, setTaskList] = useState([]);
@@ -20,6 +21,7 @@ const TaskTable = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const status = queryParams.get("status"); // Pending / Completed / In Progress / null
+const { user } = useUser();
 
   // pagination handlers
   const handlePageChange = (page) => {
@@ -145,39 +147,48 @@ const TaskTable = () => {
       button: true,
       cell: (row) => (
         <div className="flex justify-center items-center gap-3 text-lg">
-          <Link
-            to={`/dashboard/task-edit/${row?._id}`}
-            className="text-black hover:text-blue-600"
-          >
-            <RiEditFill />
-          </Link>
-          <Link
-            to={`/dashboard/task-details/${row._id}`}
-            title="Show Details"
-            className="text-blue-600 text-xl"
-          >
-            <FaEye />
-          </Link>
-          <button
-            onClick={() => handleDelete(row?._id)}
-            className="text-red-600 hover:text-red-800"
-          >
-            <svg
-              className="w-5 h-6 text-red-500"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22m-5 0V4a1 1 0 00-1-1H7a1 1 0 00-1 1v3"
-              />
-            </svg>
-          </button>
-        </div>
+  {/* ✅ Edit and Delete — only for admins */}
+  {user?.role === "admin" && (
+    <>
+      <Link
+        to={`/dashboard/task-edit/${row?._id}`}
+        className="text-black hover:text-blue-600"
+      >
+        <RiEditFill />
+      </Link>
+
+      <button
+        onClick={() => handleDelete(row?._id)}
+        className="text-red-600 hover:text-red-800"
+      >
+        <svg
+          className="w-5 h-6 text-red-500"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22m-5 0V4a1 1 0 00-1-1H7a1 1 0 00-1 1v3"
+          />
+        </svg>
+      </button>
+    </>
+  )}
+
+  {/* 👁 Always visible: Task Details */}
+  <Link
+    to={`/dashboard/task-details/${row._id}`}
+    title="Show Details"
+    className="text-blue-600 text-xl"
+  >
+    <FaEye />
+  </Link>
+</div>
+
       ),
     },
   ];

@@ -24,24 +24,6 @@ publicRequest.interceptors.request.use(
     }
 );
 
-/* Private request config */
-privateRequest.interceptors.request.use(
-    async (config) => {
-        const token = getToken();
-        if (config.headers === undefined) {
-            config.headers = {};
-        }
-        if (token) {
-           
-            config.headers["Authorization"] = "Bearer " + token || "";
-        }
-        return config;
-    },
-    (err) => {
- 
-        Promise.reject(err);
-    }
-);
 privateRequest.interceptors.request.use(
     async (config) => {
         const token = getToken();

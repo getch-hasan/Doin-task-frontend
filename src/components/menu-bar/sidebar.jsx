@@ -7,6 +7,7 @@ import { HiBars3 } from "react-icons/hi2";
 import { MdOutlineInventory2 } from "react-icons/md";
 import { CiWallet } from "react-icons/ci";
 import { SingleSelect } from "../input";
+import { useUser } from "../../hook/useUser";
 
 
 const Sidebar = ({
@@ -22,38 +23,39 @@ const Sidebar = ({
   const toggleMenu = (title) => {
     setOpenMenu(openMenu === title ? null : title);
   };
+  const { user } = useUser();
 
 
 
-  const menuData = [
-    {
-      title: "Dashboard",
-      icon: <RxDashboard />,
-      path: "/dashboard",
-    },
- 
-    {
-      title: "Tasks",
-      icon: <RiGalleryFill />,
-      path: "/dashboard/task",
+
+ const menuData = [
+  {
+    title: "Dashboard",
+    icon: <RxDashboard />,
+    path: "/dashboard",
+  },
+  {
+    title: "Tasks",
+    icon: <RiGalleryFill />,
+    path: "/dashboard/task",
     childrens: [
-  { title: "All Task", path: "/dashboard/task" },
-  { title: "Pending", path: "/dashboard/task?status=Pending" },
-  { title: "In Progress", path: "/dashboard/task?status=In Progress" },
-  { title: "Completed", path: "/dashboard/task?status=Completed" },
-  { title: "Create Task", path: "/dashboard/create-task" },
-],
+      { title: "All Task", path: "/dashboard/task" },
+      { title: "Pending", path: "/dashboard/task?status=Pending" },
+      { title: "In Progress", path: "/dashboard/task?status=In Progress" },
+      { title: "Completed", path: "/dashboard/task?status=Completed" },
+      // ✅ only include Create Task if admin
+      ...(user?.role === "admin"
+        ? [{ title: "Create Task", path: "/dashboard/create-task" }]
+        : []),
+    ],
+  },
+  {
+    title: "Users",
+    icon: <CiWallet />,
+    path: "/dashboard/users",
+  },
+];
 
-    },
-   
-    {
-      title: "Users",
-      icon: <CiWallet />,
-      path: "/dashboard/users",
-     
-    },
-
-  ];
 
   return (
     <>

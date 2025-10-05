@@ -1,4 +1,5 @@
 
+import ProtectedRoute from "../components/hoc/protected";
 import Dashboard from "../pages/Dashboard/Dashboard";
 
 import Profile from "../pages/Profile";
@@ -20,8 +21,8 @@ const appRoutes = [
       { index: true, element: <Dashboard /> }, 
       { path: "task", element: <TaskTable /> },
       { path: "task-details/:id", element: <TaskDetails /> },
-      { path: "task-edit/:id", element: <TaskEdit /> },
-      { path: "create-task", element: <TaskCreate/> },  
+      { path: "task-edit/:id", element: <ProtectedRoute><TaskEdit /></ProtectedRoute> },
+      { path: "create-task", element: <ProtectedRoute><TaskCreate/></ProtectedRoute> },  
       { path: "profile", element: <Profile/> },  
       { path: "reset-password", element: <ResetPassword/> },
     ],

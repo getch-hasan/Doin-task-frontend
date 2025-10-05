@@ -13,12 +13,13 @@ import { removeToken } from "../../utils/helpers";
 import { MdOutlineMailOutline, MdVpnKey } from "react-icons/md";
 import { BiKey } from "react-icons/bi";
 import { GiKeyLock } from "react-icons/gi";
+import { useUser } from "../../hook/useUser";
+
 
 const Header = ({
   toggleSidebar,
   menuOpen,
   setMenuStyle,
-  setOpenMobileMenu,
   menuStyle,
   setMenuPosition,
   menuPosition,
@@ -26,17 +27,12 @@ const Header = ({
 }) => {
   const [showPopup, setShowPopup] = useState(false);
   const popupRef = useRef(null);
-  // const [header, setHeader] = useState("fixed");
-  // const [menuStyle, setMenuStyle] = useState("click");
-
-  // const [layoutStyle, setLayoutStyle] = useState("fullWidth");
-
-  console.log("profail", profail);
 
   const [isOpen, setIsOpen] = useState(false);
   const [check, setCheck] = useState("");
   const [flagUrl, setFlagUrl] = useState("");
   const navigate = useNavigate();
+ 
 
   const logout = () => {
     removeToken();
@@ -151,14 +147,14 @@ const Header = ({
             onClick={() => setShowPopup(!showPopup)}
           >
             <img
-              // src={"image/login-profile.svg"}
-              src={`${import.meta.env.VITE_API_SERVER}${profail?.logo}`}
+              src={"/image/login-profile.svg"}
+              // src={`${import.meta.env.VITE_API_SERVER}${profail?.logo}`}
               alt="User"
               className="w-9 h-9 bg-gray-200 rounded-full"
             />
             <div className="flex items-center flex-col dark:text-darkTitle">
               <span className="font-bold text-[14px] text-left block">
-                {profail?.company_name}
+                {profail?.name}
               </span>
               <span className="text-[12px]">{profail?.role}</span>
             </div>

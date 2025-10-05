@@ -3,6 +3,7 @@ import Sidebar from "../components/menu-bar/sidebar";
 import Header from "../components/menu-bar/header";
 import { useCallback, useEffect, useState } from "react";
 import { NetworkServices } from "../network";
+import { useUser } from "../hook/useUser";
 
 export const DashboardLayout = () => {
   const [menuOpen, setMenuOpen] = useState(true);
@@ -10,8 +11,7 @@ export const DashboardLayout = () => {
   const [menuPosition, setMenuPosition] = useState("fixed");
   const [openMobileMenu, setOpenMobileMenu] = useState(false);
   const [profail, setProfail] = useState(false);
-  console.log("menuStyle", menuStyle);
-  console.log("menuPosition", menuPosition);
+  const {setUser}=useUser()
 
   const toggleSidebar = () => {
     console.log("first");
@@ -39,8 +39,10 @@ export const DashboardLayout = () => {
     // setLoading(true);
     try {
       const response = await NetworkServices.Profile.index();
+      console.log(response)
       if (response && response.status === 200) {
-        setProfail(response?.data.data);
+        setProfail(response?.data);
+        setUser(response?.data)
       }
     } catch (error) {
       console.error("Fetch User Error:", error);

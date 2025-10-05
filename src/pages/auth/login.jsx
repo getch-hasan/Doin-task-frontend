@@ -37,7 +37,7 @@ const Login = () => {
       const response = await publicRequest.post("users/login", newData);
       console.log(response)
       
-      if (response?.data?.user?.role == "user") {
+      if (response?.status == 200) {
         setToken(response?.data?.accessToken);
         Toastify.Success("Login successfully done");
         navigate(redirect ? redirect : "/dashboard");
