@@ -2,5 +2,5 @@ import { privateRequest } from "../config/axios.config";
 
 /* list of resource */
 export const index = async () => {
-    return await privateRequest.get(`/vendor/dashboard`);
+    return await privateRequest.get(`/task/summary`);
 };
